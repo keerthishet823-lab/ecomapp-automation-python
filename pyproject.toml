@@ -1,0 +1,60 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ecomapp-automation-python"
+version = "0.1.0"
+description = "Playwright + Python automation framework for the ecommerce application"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "playwright>=1.60,<2",
+    "pytest>=9,<10",
+    "pytest-playwright[base-url]>=0.10,<1",
+    "pytest-xdist>=3.8,<4",
+    "pytest-rerunfailures>=16,<17",
+    "pytest-html>=4.1,<5",
+    "python-dotenv>=1.1,<2",
+]
+
+[project.optional-dependencies]
+dev = ["ruff>=0.12", "mypy>=1.17"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+# Worker count, retries and timeouts are per-environment: see conftest.py.
+# The HTML report lives outside test-results/ because pytest-playwright wipes
+# that directory at the start of every run.
+addopts = [
+    "--strict-markers",
+    "--numprocesses=auto",
+    "--output=test-results",
+    "--screenshot=only-on-failure",
+    "--video=retain-on-failure",
+    "--tracing=retain-on-failure",
+    "--html=playwright-report/index.html",
+    "--self-contained-html",
+]
+markers = [
+    "smoke: fast checks that the critical paths are alive",
+    "regression: full regression coverage",
+]
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "PT", "RET", "SIM"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+mypy_path = "src"
+explicit_package_bases = true
+files = ["src", "tests", "conftest.py"]
